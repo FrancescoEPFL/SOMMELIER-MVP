@@ -1,0 +1,112 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                  RENÉ - AI SOMMELIER                             ║
+║               Quick Start - Italiano                             ║
+╚══════════════════════════════════════════════════════════════════╝
+
+📦 HAI RICEVUTO:
+├── Tutti i file del progetto
+├── rene-ai-sommelier.zip (file compresso con tutto)
+├── README.md (documentazione completa)
+└── DEPLOY_GUIDE.md (guida step-by-step al deploy)
+
+🚀 DEPLOY IN 3 PASSI:
+
+1️⃣  OTTIENI GROQ API KEY (2 minuti)
+   • Vai su: https://console.groq.com
+   • Registrati (gratuito)
+   • Vai su "API Keys" → "Create API Key"
+   • Copia la chiave (la userai dopo)
+
+2️⃣  DEPLOY SU VERCEL (2 minuti)
+   • Vai su: https://vercel.com
+   • Clicca "Add New..." → "Project"
+   • Importa il progetto (da GitHub o carica i file)
+   • Aggiungi variabile d'ambiente:
+     Nome: GROQ_API_KEY
+     Valore: [la tua API key di Groq]
+   • Clicca "Deploy"
+
+3️⃣  TESTA (30 secondi)
+   • Apri l'URL che Vercel ti ha dato
+   • Seleziona alcuni piatti
+   • Clicca "Consigliatemi i Vini"
+   • René ti darà i suoi consigli! 🍷
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 STRUTTURA FILE:
+
+rene-ai-sommelier/
+├── index.html          ← Pagina principale
+├── script.js          ← Logica frontend
+├── database.json      ← Piatti e vini
+├── assets/            ← Immagini avatar
+│   ├── happy.png
+│   ├── idle.png
+│   ├── suggesting.png
+│   └── thinking.png
+├── api/
+│   └── consiglio.js   ← Backend (Serverless Function)
+├── vercel.json        ← Config Vercel
+├── package.json       ← Dipendenze
+├── .gitignore         ← File da ignorare
+├── .env.example       ← Template variabili
+├── README.md          ← Documentazione completa
+└── DEPLOY_GUIDE.md    ← Guida deploy dettagliata
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 CARATTERISTICHE PRINCIPALI:
+
+✅ Avatar animato con 4 stati (idle, thinking, suggesting, happy)
+✅ Selezione piatti intuitiva con griglia responsive
+✅ AI Sommelier powered by Groq (Llama 3.3 70B)
+✅ Gestione errori robusta con retry logic
+✅ Design elegante con Tailwind CSS
+✅ Completamente responsive (mobile/tablet/desktop)
+✅ Timeout gestiti (30 secondi)
+✅ Messaggi di errore chiari per l'utente
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❓ PROBLEMI COMUNI:
+
+1. "Difficoltà a raggiungere la cantina"
+   → Verifica che GROQ_API_KEY sia configurata su Vercel
+   → Dashboard → Settings → Environment Variables
+
+2. Avatar non si vedono
+   → Verifica che la cartella assets/ contenga le 4 immagini
+   → Redeploy il progetto
+
+3. Menu vuoto
+   → Verifica che database.json sia nella root
+   → Controlla la console del browser (F12) per errori
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 PERSONALIZZAZIONI FACILI:
+
+• Aggiungi piatti: modifica database.json sezione "piatti"
+• Aggiungi vini: modifica database.json sezione "vini"
+• Cambia colori: in index.html sostituisci "amber" con altro colore
+• Modifica personalità René: in api/consiglio.js modifica systemMessage
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTAZIONE:
+
+• README.md → Documentazione completa del progetto
+• DEPLOY_GUIDE.md → Guida passo-passo al deploy
+• Commenti nel codice → Spiegazioni dettagliate
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 TUTTO PRONTO!
+
+Il tuo progetto René AI Sommelier è completo e pronto per il deploy.
+Segui i 3 passi sopra e avrai la tua web app live in 5 minuti!
+
+Per domande o supporto, consulta README.md o DEPLOY_GUIDE.md
+
+Buon servizio! 🍷✨
