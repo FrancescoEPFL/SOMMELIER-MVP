@@ -6,92 +6,72 @@ import { handleConsiglioAction } from '../actions/chat.js';
 export default function ChatCliente({ menu, restaurantId }) {
   const [selectedDishes, setSelectedDishes] = useState([]);
   const [recommendation, setRecommendation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null); // Stato per errori eleganti
+  const [errorMsg, setErrorMsg] = useState(null);
   const [isPending, startTransition] = useTransition();
-  const [avatarState, setAvatarState] = useState('idle');
 
-  // Controllo preliminare: il menu ha dei vini associati?
-  // Nota: assumiamo che 'menu' sia l'oggetto completo o che i vini siano passati
-  const hasWines = menu?.vini && menu.vini.length > 0;
+  const toggleDish = (nomePiatto) => {
+    setSelectedDishes(prev => 
+      prev.includes(nomePiatto) 
+        ? prev.filter(d => d !== nomePiatto) 
+        : [...prev, nomePiatto]
+    );
+  };
 
   const askRene = async () => {
-    if (!hasWines) {
-      setAvatarState('idle');
-      setErrorMsg("“Mille scuse, ma la mia cantina privata è attualmente in fase di riordino. Vi prego di consultare i miei colleghi in sala per la scelta dei calici.”");
-      return;
-    }
+    if (selectedDishes.length === 0) return;
 
-    setAvatarState('thinking');
     setErrorMsg(null);
     setRecommendation(null);
     
     startTransition(async () => {
       try {
+        // PASSIAMO L'ARRAYselectedDishes ALL'AZIONE
         const result = await handleConsiglioAction(selectedDishes, restaurantId);
         
-        if (result.error) {
-          throw new Error(result.error);
-        }
+        if (result.error) throw new Error(result.error);
 
         setRecommendation(result.consiglio);
-        setAvatarState('suggesting');
       } catch (err) {
         console.error("Errore René:", err);
-        setAvatarState('idle');
-        setErrorMsg("“Messieur, un piccolo imprevisto tecnico mi impedisce di accedere ai miei registri. La mia cantina è momentaneamente inaccessibile, vi porgo le mie più sincere scuse.”");
+        setErrorMsg("“Messieur, la mia cantina è momentaneamente inaccessibile.”");
       }
     });
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-gray-100">
-      {/* ... (Header e background rimangono invariati dal Task 1/3) */}
-
-      <section className="relative z-10 container mx-auto px-4 max-w-4xl pt-10">
+    <div className="min-h-screen bg-[#0a0a0a] text-gray-100 font-sans pb-20">
+      {/* Header Sommelier */}
+      <section className="container mx-auto px-4 max-w-4xl pt-10">
         <div className="glass-card p-10 text-center mb-16 shadow-[0_0_50px_rgba(74,4,4,0.2)]">
-          
-          {/* Avatar con pulsazione soft durante l'attesa */}
-          <div className={`w-32 h-32 mx-auto mb-8 relative rounded-full p-1 border border-[#fbbf24]/20 ${isPending ? 'animate-pulse' : ''}`}>
-             <img 
-                src={`/assets/${avatarState}.png`} 
-                alt="René" 
-                className="w-full h-full rounded-full object-cover"
-              />
+          <div className="w-32 h-32 mx-auto mb-8 relative rounded-full p-1 border border-[#fbbf24]/20">
+             <img src="/assets/rene_landing.png" alt="René" className="w-full h-full rounded-full object-cover" />
           </div>
 
-          {/* Area Messaggi René */}
-          <div className="min-h-[120px] flex flex-col justify-center">
-            {errorMsg ? (
-              <p className="text-[#fbbf24] italic font-light text-xl animate-fade-in">
-                {errorMsg}
-              </p>
-            ) : (
-              <p className="text-gray-300 italic font-light text-xl leading-relaxed">
-                {isPending 
-                  ? "“Sto consultando le annate migliori per trovare l'accordo perfetto...”" 
-                  : recommendation 
-                    ? "“Un abbinamento d'eccezione per il vostro palato.”"
-                    : "“Selezionate i piatti che desiderate gustare; troverò il compagno ideale in cantina.”"}
-              </p>
-            )}
+          <div className="min-h-[100px] flex flex-col justify-center mb-8">
+            <p className="text-gray-300 italic font-light text-xl leading-relaxed">
+              {isPending 
+                ? "“Sto consultando le annate migliori per trovare l'accordo perfetto...”" 
+                : recommendation 
+                  ? "“Un abbinamento d'eccezione per il vostro palato.”"
+                  : "“Selezionate i piatti che desiderate gustare; troverò il compagno ideale.”"}
+            </p>
           </div>
 
-          {/* Area Risposta AI (se presente) */}
-          {recommendation && !errorMsg && (
-            <div className="mt-10 pt-10 border-t border-white/10 text-left animate-slide-up">
+          {recommendation && (
+            <div className="mt-10 pt-10 border-t border-white/10 text-left animate-in fade-in slide-in-from-bottom-4">
                <div 
-                  className="prose prose-invert max-w-none prose-strong:text-[#fbbf24] prose-p:text-gray-200"
+                  className="prose prose-invert max-w-none text-gray-200"
                   dangerouslySetInnerHTML={{ __html: formatConsiglio(recommendation) }}
                />
             </div>
           )}
 
-          {/* Bottone d'Azione */}
-          <div className="mt-12">
+          <div className="mt-10">
             <button
               onClick={askRene}
               disabled={selectedDishes.length === 0 || isPending}
-              className="btn-gold-luxury" // Definita in globals.css per coerenza
+              className={`px-12 py-4 rounded-full font-bold uppercase tracking-widest transition-all duration-500 
+                ${selectedDishes.length > 0 && !isPending ? 'bg-[#fbbf24] text-black shadow-[0_0_30px_rgba(251,191,36,0.4)]' : 'bg-white/5 text-white/20'}`}
             >
               {isPending ? 'In Consultazione...' : 'Chiedi a René'}
             </button>
@@ -99,15 +79,33 @@ export default function ChatCliente({ menu, restaurantId }) {
         </div>
       </section>
 
-      {/* ... (Visualizzazione Menu per categorie dal Task 3) */}
+      {/* Menù del Giorno */}
+      <section className="container mx-auto px-4 max-w-5xl">
+        <h2 className="text-[#fbbf24] font-serif text-2xl mb-8 tracking-widest uppercase text-center opacity-70">Il Menù del Giorno</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {menu?.map((piatto) => (
+            <div 
+              key={piatto.id}
+              onClick={() => toggleDish(piatto.nome)}
+              className={`glass-card p-6 cursor-pointer transition-all duration-300 border ${
+                selectedDishes.includes(piatto.nome) ? 'border-[#fbbf24] bg-[#fbbf24]/10' : 'border-white/5 bg-white/5'
+              }`}
+            >
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-serif text-[#fbbf24]">{piatto.nome}</h3>
+                <div className={`w-3 h-3 rounded-full ${selectedDishes.includes(piatto.nome) ? 'bg-[#fbbf24] shadow-[0_0_10px_#fbbf24]' : 'bg-white/10'}`}></div>
+              </div>
+              <p className="text-gray-400 text-sm italic mt-2">{piatto.descrizione}</p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
 
-// Helper per formattare la risposta (richiama la logica del tuo vecchio script.js)
 function formatConsiglio(text) {
   return text
     .replace(/\*\*(.*?)\*\*/g, '<strong class="text-[#fbbf24] font-serif">$1</strong>')
-    .replace(/Curiosità:/i, '<div class="nota-sommelier"><span class="block text-[10px] uppercase tracking-widest text-[#fbbf24] mb-2 not-italic">La Nota del Sommelier</span>')
-    .concat(text.toLowerCase().includes('curiosità:') ? '</div>' : '');
+    .replace(/Curiosità:/i, '<br/><br/><span class="text-[10px] uppercase tracking-widest text-[#fbbf24]">La Nota del Sommelier</span><br/>');
 }
