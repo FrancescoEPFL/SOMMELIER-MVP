@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { handleConsiglioAction } from '@/app/actions/chat';
+import { handleConsiglioAction } from '../actions/chat';
 
 export default function ChatCliente({ menu, restaurantId }) {
   const [selectedDishes, setSelectedDishes] = useState([]);
