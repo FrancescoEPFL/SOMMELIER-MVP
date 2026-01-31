@@ -1,5 +1,5 @@
 import { Playfair_Display, Lato } from 'next/font/google';
-import './globals.css';
+import './global.css';
 
 const playfair = Playfair_Display({ 
   subsets: ['latin'],
