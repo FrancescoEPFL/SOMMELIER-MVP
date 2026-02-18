@@ -1,27 +1,11 @@
 {
   "name": "rene-ai-sommelier",
   "version": "1.0.0",
-  "description": "René - AI Sommelier: Abbinamenti vino intelligenti powered by Groq",
   "type": "module",
   "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'Build completed'",
-    "deploy": "vercel --prod"
+    "build": "echo 'Build completed'"
   },
   "dependencies": {
     "groq-sdk": "^0.12.0"
-  },
-  "keywords": [
-    "ai",
-    "sommelier",
-    "wine",
-    "pairing",
-    "groq",
-    "llama"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
-  "engines": {
-    "node": ">=18.x"
   }
 }
