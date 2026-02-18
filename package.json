@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "echo 'No build needed'"
-  },
+  "build": "mkdir -p public && cp -r index.html script.js database.json assets api public/"
+},
   "dependencies": {
     "groq-sdk": "^0.12.0"
   }
