@@ -1,7 +1,4 @@
-// René - AI Sommelier Frontend Script
-// Ottimizzato con gestione errori e timeout robusti
-
-// State Management
+// René - AI Sommelier Frontend Script - VERSIONE PULITA
 const state = {
     selectedDishes: [],
     dishes: [],
@@ -9,7 +6,6 @@ const state = {
     currentAvatar: 'idle'
 };
 
-// Avatar States
 const avatarStates = {
     idle: 'avatar-idle',
     thinking: 'avatar-thinking',
@@ -17,7 +13,6 @@ const avatarStates = {
     happy: 'avatar-happy'
 };
 
-// DOM Elements
 const elements = {
     menuGrid: document.getElementById('menu-grid'),
     btnConsiglia: document.getElementById('btn-consiglia'),
@@ -29,7 +24,6 @@ const elements = {
     recommendationsContent: document.getElementById('recommendations-content')
 };
 
-// Initialize App
 async function init() {
     try {
         showMessage('Sto preparando il menu per voi...', 'thinking');
@@ -40,44 +34,28 @@ async function init() {
         showMessage('Selezionate i vostri piatti preferiti e permettetemi di guidarvi attraverso un\'esperienza enologica indimenticabile.');
     } catch (error) {
         console.error('Errore di inizializzazione:', error);
-        showMessage('Mi dispiace, si è verificato un errore nel caricare il menu. Per favore, ricaricate la pagina.', 'idle');
-        showErrorNotification('Errore di caricamento del menu');
+        showMessage('Si è verificato un errore. Ricaricate la pagina.', 'idle');
     }
 }
 
-// Load Database
 async function loadDatabase() {
     try {
         const response = await fetch('/database.json');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         state.dishes = data.piatti || [];
         state.wines = data.vini || [];
-        
-        if (state.dishes.length === 0) {
-            throw new Error('Nessun piatto trovato nel database');
-        }
     } catch (error) {
-        console.error('Errore nel caricamento del database:', error);
-        throw new Error('Impossibile caricare il menu. Verificate che database.json sia presente.');
+        throw new Error('Impossibile caricare il database.');
     }
 }
 
-// Render Menu
 function renderMenu() {
-    if (!elements.menuGrid || state.dishes.length === 0) {
-        console.error('Impossibile renderizzare il menu');
-        return;
-    }
+    if (!elements.menuGrid || state.dishes.length === 0) return;
     
     elements.menuGrid.innerHTML = state.dishes.map(dish => `
         <div class="card-dish bg-gray-900 rounded-2xl p-6 shadow-xl border border-gray-700" 
-             data-dish-id="${dish.id}"
-             role="button"
-             tabindex="0"
-             aria-pressed="false">
+             data-dish-id="${dish.id}" role="button" tabindex="0">
             <div class="mb-4">
                 <span class="badge bg-amber-600 text-white">${dish.categoria}</span>
                 <span class="badge bg-gray-700 text-gray-300 ml-2">${dish.intensita}</span>
@@ -93,298 +71,143 @@ function renderMenu() {
     `).join('');
 }
 
-// Setup Event Listeners
 function setupEventListeners() {
-    // Dish selection
     elements.menuGrid.addEventListener('click', (e) => {
         const card = e.target.closest('.card-dish');
-        if (card) {
-            toggleDishSelection(parseInt(card.dataset.dishId));
-        }
+        if (card) toggleDishSelection(parseInt(card.dataset.dishId));
     });
     
-    // Keyboard accessibility
-    elements.menuGrid.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            const card = e.target.closest('.card-dish');
-            if (card) {
-                e.preventDefault();
-                toggleDishSelection(parseInt(card.dataset.dishId));
-            }
-        }
-    });
-    
-    // Consiglia button
     elements.btnConsiglia.addEventListener('click', handleConsiglio);
 }
 
-// Toggle Dish Selection
 function toggleDishSelection(dishId) {
     const index = state.selectedDishes.indexOf(dishId);
     const card = document.querySelector(`[data-dish-id="${dishId}"]`);
     
     if (index === -1) {
-        // Add dish
-        if (state.selectedDishes.length >= 5) {
-            showErrorNotification('Potete selezionare massimo 5 piatti');
-            return;
-        }
+        if (state.selectedDishes.length >= 5) return;
         state.selectedDishes.push(dishId);
         card.classList.add('selected');
-        card.setAttribute('aria-pressed', 'true');
     } else {
-        // Remove dish
         state.selectedDishes.splice(index, 1);
         card.classList.remove('selected');
-        card.setAttribute('aria-pressed', 'false');
     }
     
-    updateSelectedDishesDisplay();
-    updateConsigliButton();
-    updateReneMessage();
+    updateUI();
 }
 
-// Update Selected Dishes Display
-function updateSelectedDishesDisplay() {
-    if (state.selectedDishes.length === 0) {
-        elements.selectedDishesDisplay.classList.add('hidden');
-        return;
-    }
-    
-    elements.selectedDishesDisplay.classList.remove('hidden');
-    elements.selectedDishesList.innerHTML = state.selectedDishes.map(dishId => {
-        const dish = state.dishes.find(d => d.id === dishId);
-        return `<span class="badge bg-amber-700 text-white">${dish.nome}</span>`;
-    }).join('');
-}
-
-// Update Consiglia Button
-function updateConsigliButton() {
-    if (state.selectedDishes.length > 0) {
-        elements.btnConsiglia.disabled = false;
-        elements.btnConsiglia.textContent = `Consigliatemi i Vini (${state.selectedDishes.length} ${state.selectedDishes.length === 1 ? 'piatto' : 'piatti'})`;
-    } else {
-        elements.btnConsiglia.disabled = true;
-        elements.btnConsiglia.textContent = 'Consigliatemi i Vini Perfetti';
-    }
-}
-
-// Update René Message
-function updateReneMessage() {
+function updateUI() {
     const count = state.selectedDishes.length;
     
+    // Mostra/Nascondi lista piatti selezionati
     if (count === 0) {
-        showMessage('Selezionate i vostri piatti preferiti e permettetemi di guidarvi attraverso un\'esperienza enologica indimenticabile.');
-    } else if (count === 1) {
-        showMessage('Ottima scelta! Posso consigliarvi il vino perfetto, o desiderate aggiungere altri piatti?');
+        elements.selectedDishesDisplay.classList.add('hidden');
+        elements.btnConsiglia.disabled = true;
+        elements.btnConsiglia.textContent = 'Consigliatemi i Vini Perfetti';
+        showMessage('Selezionate i piatti per iniziare.');
     } else {
-        showMessage(`Eccellente! ${count} piatti selezionati. Permettetemi di trovare gli abbinamenti ideali per questa esperienza culinaria.`);
+        elements.selectedDishesDisplay.classList.remove('hidden');
+        elements.btnConsiglia.disabled = false;
+        elements.btnConsiglia.textContent = `Consigliatemi (${count} ${count === 1 ? 'piatto' : 'piatti'})`;
+        elements.selectedDishesList.innerHTML = state.selectedDishes.map(dishId => {
+            const dish = state.dishes.find(d => d.id === dishId);
+            return `<span class="badge bg-amber-700 text-white">${dish.nome}</span>`;
+        }).join('');
+        showMessage(count === 1 ? 'Ottima scelta! Altro o procediamo?' : `Magnifico, ${count} piatti selezionati.`);
     }
 }
 
-// Handle Consiglio Request
 async function handleConsiglio() {
     if (state.selectedDishes.length === 0) return;
     
-    // Show loading state
     setLoadingState(true);
     setAvatarState('thinking');
-    showMessage('Sto consultando la mia cantina per trovare gli abbinamenti perfetti...');
-    
-    // Hide previous recommendations
+    showMessage('Consulto la cantina per voi...');
     elements.recommendationsSection.classList.add('hidden');
     
     try {
-        const selectedDishesData = state.selectedDishes.map(id => 
-            state.dishes.find(d => d.id === id)
-        );
+        const selectedDishesData = state.selectedDishes.map(id => state.dishes.find(d => d.id === id));
         
-        const response = await fetchWithTimeout('/api/consiglio', {
+        const response = await fetch('/api/consiglio', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                piatti: selectedDishesData
-            })
-        }, 30000); // 30 second timeout
-        
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || `Errore del server: ${response.status}`);
-        }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ piatti: selectedDishesData })
+        });
         
         const data = await response.json();
-        
-        if (!data.consiglio) {
-            throw new Error('Risposta del server non valida');
-        }
-        
+        if (!response.ok) throw new Error(data.error || 'Errore server');
+
         displayRecommendations(data.consiglio);
-        setAvatarState('suggesting');
-        showMessage('Ecco i miei consigli per esaltare al meglio i vostri piatti!');
+        setAvatarState('happy');
+        showMessage('Ecco il mio consiglio personalizzato!');
         
-        // Scroll to recommendations
         setTimeout(() => {
-            elements.recommendationsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 500);
+            elements.recommendationsSection.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
         
     } catch (error) {
-        console.error('Errore nella richiesta di consiglio:', error);
-        handleConsigliError(error);
+        showMessage('Scusate, ho avuto un problema tecnico. Riprovare?', 'idle');
     } finally {
         setLoadingState(false);
     }
 }
 
-// Fetch with Timeout
-function fetchWithTimeout(url, options = {}, timeout = 30000) {
-    return Promise.race([
-        fetch(url, options),
-        new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Timeout: la richiesta ha impiegato troppo tempo')), timeout)
-        )
-    ]);
+// FUNZIONE CRITICA: Formattazione pulita senza tag "sporchi"
+function formatConsiglio(text) {
+    if (!text) return "";
+    
+    // 1. Rimuove eventuali tag HTML che l'AI potrebbe aver inserito per errore
+    const cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
+    
+    // 2. Divide in paragrafi e pulisce spazi
+    return cleanText
+        .split('\n')
+        .map(p => p.trim())
+        .filter(p => p.length > 0)
+        .map(p => `<p class="mb-4 text-gray-200 leading-relaxed">${p}</p>`)
+        .join('');
 }
 
-// Handle Consiglio Error
-function handleConsigliError(error) {
-    setAvatarState('idle');
-    
-    let errorMessage = 'Mi dispiace, ho difficoltà a raggiungere la cantina in questo momento. ';
-    
-    if (error.message.includes('Timeout')) {
-        errorMessage += 'Il server sta impiegando troppo tempo a rispondere. Per favore, riprovate tra qualche istante.';
-    } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-        errorMessage += 'Verificate la vostra connessione internet e riprovate.';
-    } else if (error.message.includes('API key')) {
-        errorMessage += 'Si è verificato un problema con la configurazione del servizio. Contattate l\'amministratore.';
-    } else {
-        errorMessage += error.message || 'Si è verificato un errore imprevisto.';
-    }
-    
-    showMessage(errorMessage);
-    showErrorNotification('Errore: ' + (error.message || 'Errore sconosciuto'));
-}
-
-// Display Recommendations
 function displayRecommendations(consiglio) {
-    setAvatarState('happy');
-    
-    // Parse the recommendation text
-    const formattedConsiglio = formatConsiglio(consiglio);
-    
     elements.recommendationsContent.innerHTML = `
-        <div class="wine-recommendation bg-gray-900 rounded-2xl p-8 border border-amber-700 shadow-2xl">
-            <div class="prose prose-invert prose-amber max-w-none">
-                ${formattedConsiglio}
+        <div class="wine-recommendation bg-black bg-opacity-60 rounded-2xl p-8 border border-amber-700 shadow-2xl">
+            <div class="text-lg italic">
+                ${formatConsiglio(consiglio)}
             </div>
-            <div class="mt-8 pt-6 border-t border-gray-700 text-center">
+            <div class="mt-8 pt-6 border-t border-gray-800 text-center">
                 <button onclick="resetSelection()" 
-                        class="bg-gray-800 hover:bg-gray-700 text-amber-400 font-semibold py-2 px-6 rounded-full transition-all">
+                        class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-8 rounded-full transition-all">
                     Nuova Selezione
                 </button>
             </div>
         </div>
     `;
-    
     elements.recommendationsSection.classList.remove('hidden');
 }
 
-// Format Consiglio
-// In script.js
-function formatConsiglio(text) {
-    // Sostituisce i doppi a capo con paragrafi puliti
-    let paragraphs = text.split('\n').filter(p => p.trim() !== '');
-    return paragraphs.map(p => `<p class="mb-4 text-gray-200">${p}</p>`).join('');
-}
-
-// Reset Selection
 function resetSelection() {
-    // Clear selected dishes
     state.selectedDishes = [];
-    
-    // Remove visual selection from cards
-    document.querySelectorAll('.card-dish.selected').forEach(card => {
-        card.classList.remove('selected');
-        card.setAttribute('aria-pressed', 'false');
-    });
-    
-    // Hide recommendations
+    document.querySelectorAll('.card-dish.selected').forEach(c => c.classList.remove('selected'));
     elements.recommendationsSection.classList.add('hidden');
-    
-    // Reset UI
-    updateSelectedDishesDisplay();
-    updateConsigliButton();
+    updateUI();
     setAvatarState('idle');
-    showMessage('Selezionate nuovamente i vostri piatti per ricevere nuovi consigli enologici.');
-    
-    // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Set Avatar State
 function setAvatarState(stateName) {
-    if (state.currentAvatar === stateName) return;
-    
-    // Hide all avatars
-    Object.values(avatarStates).forEach(id => {
-        const img = document.getElementById(id);
-        if (img) img.classList.remove('active');
-    });
-    
-    // Show selected avatar
-    const targetAvatar = document.getElementById(avatarStates[stateName]);
-    if (targetAvatar) {
-        targetAvatar.classList.add('active');
-        state.currentAvatar = stateName;
-    }
+    Object.values(avatarStates).forEach(id => document.getElementById(id)?.classList.remove('active'));
+    document.getElementById(avatarStates[stateName])?.classList.add('active');
 }
 
-// Show Message
 function showMessage(message, avatarState = null) {
-    if (elements.reneMessage) {
-        elements.reneMessage.textContent = message;
-    }
-    if (avatarState) {
-        setAvatarState(avatarState);
-    }
+    if (elements.reneMessage) elements.reneMessage.textContent = message;
+    if (avatarState) setAvatarState(avatarState);
 }
 
-// Set Loading State
 function setLoadingState(isLoading) {
-    if (isLoading) {
-        elements.btnConsiglia.disabled = true;
-        elements.loadingState.classList.remove('hidden');
-    } else {
-        elements.btnConsiglia.disabled = false;
-        elements.loadingState.classList.add('hidden');
-    }
+    elements.btnConsiglia.disabled = isLoading;
+    elements.loadingState.classList.toggle('hidden', !isLoading);
 }
 
-// Show Error Notification
-function showErrorNotification(message) {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = 'error-message fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 max-w-md';
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    // Remove after 5 seconds
-    setTimeout(() => {
-        notification.style.transition = 'opacity 0.5s';
-        notification.style.opacity = '0';
-        setTimeout(() => notification.remove(), 500);
-    }, 5000);
-}
-
-// Initialize app when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}
-
-// Export for use in HTML onclick
+document.addEventListener('DOMContentLoaded', init);
 window.resetSelection = resetSelection;
