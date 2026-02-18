@@ -292,21 +292,11 @@ function displayRecommendations(consiglio) {
 }
 
 // Format Consiglio
+// In script.js
 function formatConsiglio(text) {
-    // Convert markdown-style formatting to HTML
-    let formatted = text
-        .replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-400">$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/\n\n/g, '</p><p class="mb-4">')
-        .replace(/\n/g, '<br>');
-    
-    // Wrap in paragraph tags
-    formatted = '<p class="mb-4">' + formatted + '</p>';
-    
-    // Add styling to wine names (assuming they're in quotes or after specific keywords)
-    formatted = formatted.replace(/"([^"]+)"/g, '<span class="text-amber-300 font-semibold">"$1"</span>');
-    
-    return formatted;
+    // Sostituisce i doppi a capo con paragrafi puliti
+    let paragraphs = text.split('\n').filter(p => p.trim() !== '');
+    return paragraphs.map(p => `<p class="mb-4 text-gray-200">${p}</p>`).join('');
 }
 
 // Reset Selection
