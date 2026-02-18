@@ -1,0 +1,23 @@
+{
+  "ristorante": "L'Incanto Divino",
+  "menu_cibo": [
+    {"id": "p1", "nome": "Tartare di Tonno e Lime", "categoria": "Antipasto", "descrizione": "Tonno fresco, zeste di lime, polvere di cappero."},
+    {"id": "p2", "nome": "Burrata e Alici del Cantabrico", "categoria": "Antipasto", "descrizione": "Burrata pugliese, alici, crostini caldi."},
+    {"id": "p3", "nome": "Risotto ai Funghi Porcini", "categoria": "Primo", "descrizione": "Riso Carnaroli, porcini freschi, burro di malga."},
+    {"id": "p4", "nome": "Spaghetti alle Vongole Veraci", "categoria": "Primo", "descrizione": "Pasta trafilata al bronzo, vongole, prezzemolo, peperoncino."},
+    {"id": "p5", "nome": "Tagliata di Manzo ai Cristalli di Sale", "categoria": "Secondo", "descrizione": "Manzo frollato 30 giorni, rosmarino, olio EVO."},
+    {"id": "p6", "nome": "Salmone in Crosta di Pistacchio", "categoria": "Secondo", "descrizione": "Filetto di salmone, granella di pistacchio, asparagi."}
+  ],
+  "cantina_vini": [
+    {"id": "v1", "etichetta": "Prosecco Valdobbiadene DOCG", "vitigno": "Glera", "prezzo": "28€", "note": "Bollicina fine, mela verde, fiori bianchi. Fresco."},
+    {"id": "v2", "etichetta": "Franciacorta Satèn", "vitigno": "Chardonnay", "prezzo": "45€", "note": "Perlage setoso, crosta di pane, mandorla."},
+    {"id": "v3", "etichetta": "Vermentino di Gallura", "vitigno": "Vermentino", "prezzo": "24€", "note": "Sapido, note saline, erbe aromatiche. Perfetto per il mare."},
+    {"id": "v4", "etichetta": "Gewürztraminer Alto Adige", "vitigno": "Gewürztraminer", "prezzo": "32€", "note": "Aromatico, litchi, petali di rosa. Intenso."},
+    {"id": "v5", "etichetta": "Chianti Classico", "vitigno": "Sangiovese", "prezzo": "30€", "note": "Frutti rossi, violetta, leggermente tannico."},
+    {"id": "v6", "etichetta": "Barolo DOCG", "vitigno": "Nebbiolo", "prezzo": "75€", "note": "Strutturato, tabacco, sottobosco, grande corpo."},
+    {"id": "v7", "etichetta": "Etna Rosso", "vitigno": "Nerello Mascalese", "prezzo": "38€", "note": "Elegante, minerale, cenere vulcanica e lampone."},
+    {"id": "v8", "etichetta": "Pinot Grigio", "vitigno": "Pinot Grigio", "prezzo": "22€", "note": "Leggero, facile beva, pera e agrumi."},
+    {"id": "v9", "etichetta": "Bolgheri Rosso", "vitigno": "Cabernet/Merlot", "prezzo": "55€", "note": "Seta, frutti neri, spezie dolci, persistente."},
+    {"id": "v10", "etichetta": "Rosato del Salento", "vitigno": "Negroamaro", "prezzo": "26€", "note": "Melograno, ciliegia fresca, molto versatile."}
+  ]
+}
